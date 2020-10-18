@@ -1,0 +1,48 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  questionnaire
+
+  Sample SAM Template for questionnaire
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 3
+
+Resources:
+  QuestionnaireFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: questionnaire/
+      Handler: app.lambda_handler
+      Runtime: python3.8
+      Events:
+        Questionnaire:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /answer
+            RequestParameters:
+              - method.request.querystring.comm_skill
+              - method.request.querystring.infra_skill
+              - method.request.querystring.kindness
+              - method.request.querystring.management
+              - method.request.querystring.op_skill
+              - method.request.querystring.pg_skill
+              - method.request.querystring.strength
+              - method.request.querystring.name
+            Method: get
+
+Outputs:
+  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
+  # Find out more about other implicit resources you can reference within SAM
+  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
+  QuestionnaireApi:
+    Description: "API Gateway endpoint URL for Prod stage for Hello World function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/answer/{name}"
+  QuestionnaireFunction:
+    Description: "Hello World Lambda Function ARN"
+    Value: !GetAtt QuestionnaireFunction.Arn
+  QuestionnaireFunctionIamRole:
+    Description: "Implicit IAM Role created for Hello World function"
+    Value: !GetAtt QuestionnaireFunctionRole.Arn
